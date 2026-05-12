@@ -32,6 +32,14 @@ class RefType(str, enum.Enum):
     production_out = "production_out"
     adjustment = "adjustment"
 
+class ProductionRunType(str, enum.Enum):
+    paddy_milling = "paddy_milling"
+    rice_reprocessing = "rice_reprocessing"
+
+class ProductionRunStatus(str, enum.Enum):
+    draft = "draft"
+    completed = "completed"
+
 class User(Base):
     __tablename__ = "users"
 
@@ -102,3 +110,44 @@ class InventoryBalance(Base):
 
     product = relationship("Product", back_populates="inventory_balances")
     warehouse = relationship("Warehouse", back_populates="inventory_balances")
+
+class ProductionRun(Base):
+    __tablename__ = "production_runs"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    run_date = Column(DateTime, default=datetime.utcnow)
+    type = Column(Enum(ProductionRunType))
+    status = Column(Enum(ProductionRunStatus), default=ProductionRunStatus.draft)
+    notes = Column(Text, nullable=True)
+
+    inputs = relationship("ProductionInput", back_populates="run", cascade="all, delete-orphan")
+    outputs = relationship("ProductionOutput", back_populates="run", cascade="all, delete-orphan")
+
+class ProductionInput(Base):
+    __tablename__ = "production_inputs"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    run_id = Column(String, ForeignKey("production_runs.id"), index=True)
+    product_id = Column(String, ForeignKey("products.id"))
+    warehouse_id = Column(String, ForeignKey("warehouses.id"))
+    qty = Column(Numeric(10, 2))
+    total_cost = Column(Numeric(15, 2), default=0)
+
+    run = relationship("ProductionRun", back_populates="inputs")
+    product = relationship("Product")
+    warehouse = relationship("Warehouse")
+
+class ProductionOutput(Base):
+    __tablename__ = "production_outputs"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    run_id = Column(String, ForeignKey("production_runs.id"), index=True)
+    product_id = Column(String, ForeignKey("products.id"))
+    warehouse_id = Column(String, ForeignKey("warehouses.id"))
+    qty = Column(Numeric(10, 2))
+    cost_allocation_percent = Column(Numeric(5, 2), default=0)
+    total_cost = Column(Numeric(15, 2), default=0)
+
+    run = relationship("ProductionRun", back_populates="outputs")
+    product = relationship("Product")
+    warehouse = relationship("Warehouse")
