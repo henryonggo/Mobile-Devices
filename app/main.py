@@ -5,7 +5,7 @@ from .api import auth, master_data, imports, production, purchasing, sales
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="Rice Factory ERP API",
+    title="JulesERP API",
     description="A focused ERP API tailored for a Palembang-based rice milling operation.",
     version="0.1.0",
 )
@@ -19,4 +19,4 @@ app.include_router(sales.router)
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to Rice Factory ERP API"}
+    return {"message": "Welcome to JulesERP API"}
