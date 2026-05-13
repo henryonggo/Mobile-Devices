@@ -1,4 +1,4 @@
-# Rice Factory ERP
+# JulesERP
 
 A focused, lightweight ERP system tailored for a rice milling and processing operation. This system centralizes operational workflows covering master data, multi-warehouse inventory, batch production (paddy-to-rice and rice-to-rice), and order fulfillment, while treating Google Sheets ingestion as a first-class citizen.
 
